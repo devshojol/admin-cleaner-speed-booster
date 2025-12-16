@@ -1,0 +1,35 @@
+{
+  "name": "admin-cleaner-speed-booster",
+  "version": "1.0.0",
+  "description": "Optimize WordPress admin panel performance and UI",
+  "main": "build/admin.js",
+  "scripts": {
+    "dev": "wp-scripts start src/admin/index.js --output-path=build",
+    "build": "wp-scripts build src/admin/index.js --output-path=build",
+    "format": "wp-scripts format",
+    "lint:css": "wp-scripts lint-style",
+    "lint:js": "wp-scripts lint-js",
+    "packages-update": "wp-scripts packages-update"
+  },
+  "keywords": [
+    "wordpress",
+    "admin",
+    "performance",
+    "optimization"
+  ],
+  "author": "Your Name",
+  "license": "GPL-2.0-or-later",
+  "devDependencies": {
+    "@wordpress/scripts": "^27.0.0",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.4.0"
+  },
+  "dependencies": {
+    "@wordpress/api-fetch": "^7.0.0",
+    "@wordpress/components": "^27.0.0",
+    "@wordpress/data": "^10.0.0",
+    "@wordpress/element": "^6.0.0",
+    "@wordpress/i18n": "^5.0.0"
+  }
+}

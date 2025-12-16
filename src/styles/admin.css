@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* WordPress admin overrides */
+.acsb-admin {
+  @apply font-sans;
+}
+
+.acsb-admin .components-card {
+  @apply border border-gray-200;
+}
+
+.acsb-admin .components-card__header {
+  @apply border-b border-gray-200 bg-gray-50;
+}
+
+.acsb-tabs .components-tab-panel__tabs {
+  @apply border-b border-gray-200;
+}
+
+.acsb-tabs .components-tab-panel__tabs-item {
+  @apply px-4 py-3 border-b-2 border-transparent transition-colors;
+}
+
+.acsb-tabs .components-tab-panel__tabs-item.is-active {
+  @apply border-wpblue text-wpblue;
+}
+
+.acsb-tabs .components-tab-panel__tabs-item:hover {
+  @apply text-wpblue;
+}
+
+/* Custom scrollbar for long lists */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 8px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  @apply bg-gray-100 rounded;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .acsb-admin .flex {
+    @apply flex-col;
+  }
+
+  .acsb-admin .grid-cols-3 {
+    @apply grid-cols-1;
+  }
+}
