@@ -6,9 +6,6 @@ if (! defined('ABSPATH')) {
   exit;
 }
 
-/**
- * Settings management
- */
 class Settings
 {
 
@@ -24,12 +21,9 @@ class Settings
 
   private function __construct()
   {
-    // Settings are managed via REST API
+    // Settings managed via REST API
   }
 
-  /**
-   * Get all settings
-   */
   public function get_settings()
   {
     $defaults = $this->get_defaults();
@@ -38,9 +32,6 @@ class Settings
     return wp_parse_args($settings, $defaults);
   }
 
-  /**
-   * Get default settings
-   */
   public function get_defaults()
   {
     return array(
@@ -54,42 +45,37 @@ class Settings
       // Performance
       'disable_emojis_admin' => false,
       'disable_embeds_admin' => false,
-      'disable_heartbeat' => 'default', // default, disable, modify
+      'disable_heartbeat' => 'default',
       'heartbeat_frequency' => 60,
       'unload_scripts' => array(),
       'unload_styles' => array(),
 
-      // Pro features
-      'enable_analytics' => false,
+      // White Label
       'custom_admin_logo' => '',
-      'custom_admin_title' => '',
-      'remove_wp_branding' => false,
+      'custom_admin_logo_url' => '',
+      'custom_login_logo' => '',
+      'hide_wp_version' => false,
+      'remove_wp_logo_admin_bar' => false,
+      'custom_admin_css' => '',
+
+      // Analytics
+      'enable_analytics' => false,
+      'analytics_data' => array(),
 
       // Meta
       'version' => ACSB_VERSION,
     );
   }
 
-  /**
-   * Update settings
-   */
   public function update_settings($new_settings)
   {
     $current = $this->get_settings();
-
-    // Sanitize settings
     $sanitized = $this->sanitize_settings($new_settings);
-
-    // Merge with current
     $updated = array_merge($current, $sanitized);
 
-    // Update option
     return update_option('acsb_settings', $updated);
   }
 
-  /**
-   * Sanitize settings
-   */
   private function sanitize_settings($settings)
   {
     $sanitized = array();
@@ -131,29 +117,55 @@ class Settings
     if (isset($settings['heartbeat_frequency'])) {
       $sanitized['heartbeat_frequency'] = absint($settings['heartbeat_frequency']);
     }
-
     if (isset($settings['unload_scripts']) && is_array($settings['unload_scripts'])) {
       $sanitized['unload_scripts'] = array_map('sanitize_text_field', $settings['unload_scripts']);
     }
-
     if (isset($settings['unload_styles']) && is_array($settings['unload_styles'])) {
       $sanitized['unload_styles'] = array_map('sanitize_text_field', $settings['unload_styles']);
+    }
+
+    // White Label
+    if (isset($settings['custom_admin_logo'])) {
+      $sanitized['custom_admin_logo'] = esc_url_raw($settings['custom_admin_logo']);
+    }
+
+    if (isset($settings['custom_admin_logo_url'])) {
+      $sanitized['custom_admin_logo_url'] = esc_url_raw($settings['custom_admin_logo_url']);
+    }
+
+    if (isset($settings['custom_login_logo'])) {
+      $sanitized['custom_login_logo'] = esc_url_raw($settings['custom_login_logo']);
+    }
+
+    if (isset($settings['hide_wp_version'])) {
+      $sanitized['hide_wp_version'] = (bool) $settings['hide_wp_version'];
+    }
+
+    if (isset($settings['remove_wp_logo_admin_bar'])) {
+      $sanitized['remove_wp_logo_admin_bar'] = (bool) $settings['remove_wp_logo_admin_bar'];
+    }
+
+    if (isset($settings['custom_admin_css'])) {
+      $sanitized['custom_admin_css'] = wp_strip_all_tags($settings['custom_admin_css']);
+    }
+
+    // Analytics
+    if (isset($settings['enable_analytics'])) {
+      $sanitized['enable_analytics'] = (bool) $settings['enable_analytics'];
+    }
+
+    if (isset($settings['analytics_data']) && is_array($settings['analytics_data'])) {
+      $sanitized['analytics_data'] = $settings['analytics_data'];
     }
 
     return $sanitized;
   }
 
-  /**
-   * Reset to defaults
-   */
   public function reset_settings()
   {
     return update_option('acsb_settings', $this->get_defaults());
   }
 
-  /**
-   * Get specific setting
-   */
   public function get($key, $default = null)
   {
     $settings = $this->get_settings();

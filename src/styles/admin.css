@@ -7,54 +7,244 @@
   @apply font-sans;
 }
 
+/* Cards with better shadows and hover effects */
 .acsb-admin .components-card {
-  @apply border border-gray-200;
+  @apply border border-gray-200 transition-shadow duration-200;
+}
+
+.acsb-admin .components-card:hover {
+  @apply shadow-md;
 }
 
 .acsb-admin .components-card__header {
-  @apply border-b border-gray-200 bg-gray-50;
+  @apply border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white;
 }
 
+.acsb-admin .components-card__body {
+  @apply p-5;
+}
+
+/* Enhanced tab styles */
 .acsb-tabs .components-tab-panel__tabs {
-  @apply border-b border-gray-200;
+  @apply border-b-2 border-gray-200 bg-gray-50;
 }
 
 .acsb-tabs .components-tab-panel__tabs-item {
-  @apply px-4 py-3 border-b-2 border-transparent transition-colors;
-}
-
-.acsb-tabs .components-tab-panel__tabs-item.is-active {
-  @apply border-wpblue text-wpblue;
+  @apply px-6 py-4 border-b-4 border-transparent transition-all duration-200 font-medium;
 }
 
 .acsb-tabs .components-tab-panel__tabs-item:hover {
-  @apply text-wpblue;
+  @apply text-blue-600 bg-blue-50;
+}
+
+.acsb-tabs .components-tab-panel__tabs-item.is-active {
+  @apply border-blue-600 text-blue-600 bg-white;
+}
+
+/* Button enhancements */
+.acsb-admin .components-button {
+  @apply transition-all duration-200;
+}
+
+.acsb-admin .components-button.is-primary {
+  @apply shadow-sm hover:shadow-md;
+}
+
+.acsb-admin .components-button.is-secondary {
+  @apply hover:bg-gray-100;
+}
+
+/* Toggle control enhancements */
+.acsb-admin .components-toggle-control {
+  @apply py-3 border-b border-gray-100 last:border-b-0;
+}
+
+.acsb-admin .components-toggle-control:hover {
+  @apply bg-gray-50;
+}
+
+/* Checkbox control spacing */
+.acsb-admin .components-checkbox-control {
+  @apply py-2;
+}
+
+/* Notice improvements */
+.acsb-admin .components-notice {
+  @apply shadow-sm;
 }
 
 /* Custom scrollbar for long lists */
 .overflow-y-auto::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
 }
 
 .overflow-y-auto::-webkit-scrollbar-track {
-  @apply bg-gray-100 rounded;
+  @apply bg-gray-100 rounded-lg;
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb {
-  @apply bg-gray-300 rounded;
+  @apply bg-gray-400 rounded-lg;
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-  @apply bg-gray-400;
+  @apply bg-gray-500;
+}
+
+/* Spinner center alignment */
+.acsb-admin .components-spinner {
+  @apply mx-auto;
+}
+
+/* Form field spacing */
+.acsb-admin .components-base-control {
+  @apply mb-4;
+}
+
+/* Text control enhancements */
+.acsb-admin .components-text-control__input {
+  @apply transition-all duration-200;
+}
+
+.acsb-admin .components-text-control__input:focus {
+  @apply ring-2 ring-blue-500 ring-opacity-50;
+}
+
+/* Textarea enhancements */
+.acsb-admin .components-textarea-control__input {
+  @apply transition-all duration-200 font-mono text-sm;
+}
+
+.acsb-admin .components-textarea-control__input:focus {
+  @apply ring-2 ring-blue-500 ring-opacity-50;
+}
+
+/* Select control enhancements */
+.acsb-admin .components-select-control__input {
+  @apply transition-all duration-200;
+}
+
+.acsb-admin .components-select-control__input:focus {
+  @apply ring-2 ring-blue-500 ring-opacity-50;
+}
+
+/* Range control enhancements */
+.acsb-admin .components-range-control__slider {
+  @apply transition-all duration-200;
+}
+
+/* Gradient backgrounds for info boxes */
+.acsb-admin .gradient-info-box {
+  @apply bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4;
+}
+
+/* Stats card styling */
+.acsb-admin .stat-card {
+  @apply text-center p-6 bg-gradient-to-br from-white to-gray-50 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow duration-200;
+}
+
+/* Page item hover effect */
+.acsb-admin .page-item {
+  @apply p-3 bg-gray-50 rounded-lg hover:bg-blue-50 hover:border-blue-200 transition-all duration-200 cursor-pointer;
+}
+
+/* Badge styling */
+.acsb-admin .badge {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
+}
+
+.acsb-admin .badge-blue {
+  @apply bg-blue-100 text-blue-800;
+}
+
+.acsb-admin .badge-green {
+  @apply bg-green-100 text-green-800;
+}
+
+.acsb-admin .badge-yellow {
+  @apply bg-yellow-100 text-yellow-800;
+}
+
+.acsb-admin .badge-red {
+  @apply bg-red-100 text-red-800;
+}
+
+/* Loading skeleton animation */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.acsb-admin .skeleton {
+  @apply bg-gray-200 rounded;
+  animation: shimmer 2s infinite;
+  background: linear-gradient(to right, #f0f0f0 4%, #e0e0e0 25%, #f0f0f0 36%);
+  background-size: 1000px 100%;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+  .acsb-admin .components-card {
+    @apply mb-4;
+  }
+
   .acsb-admin .flex {
     @apply flex-col;
   }
 
   .acsb-admin .grid-cols-3 {
     @apply grid-cols-1;
+  }
+
+  .acsb-tabs .components-tab-panel__tabs-item {
+    @apply px-3 py-3 text-sm;
+  }
+}
+
+/* Print styles */
+@media print {
+  .acsb-admin .components-button,
+  .acsb-admin .components-notice,
+  .acsb-tabs .components-tab-panel__tabs {
+    @apply hidden;
+  }
+}
+
+/* Accessibility improvements */
+.acsb-admin *:focus {
+  @apply outline-none;
+}
+
+.acsb-admin *:focus-visible {
+  @apply ring-2 ring-blue-500 ring-offset-2;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .acsb-admin .components-card {
+    @apply border-2 border-black;
+  }
+
+  .acsb-tabs .components-tab-panel__tabs-item.is-active {
+    @apply border-black;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .acsb-admin * {
+    @apply transition-none;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* Dark mode support (if WordPress adds it in future) */
+@media (prefers-color-scheme: dark) {
+  .acsb-admin {
+    /* Add dark mode styles here when WordPress supports it */
   }
 }

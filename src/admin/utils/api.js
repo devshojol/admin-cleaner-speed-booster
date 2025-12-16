@@ -24,6 +24,21 @@ export const resetSettings = async () => {
   });
 };
 
+export const exportSettings = async () => {
+  return apiFetch({
+    path: `${API_NAMESPACE}/settings/export`,
+    method: "GET",
+  });
+};
+
+export const importSettings = async (data) => {
+  return apiFetch({
+    path: `${API_NAMESPACE}/settings/import`,
+    method: "POST",
+    data: { data },
+  });
+};
+
 export const getDashboardWidgets = async () => {
   return apiFetch({
     path: `${API_NAMESPACE}/dashboard-widgets`,
@@ -56,5 +71,12 @@ export const getAnalytics = async () => {
   return apiFetch({
     path: `${API_NAMESPACE}/analytics`,
     method: "GET",
+  });
+};
+
+export const resetAnalytics = async () => {
+  return apiFetch({
+    path: `${API_NAMESPACE}/analytics/reset`,
+    method: "POST",
   });
 };

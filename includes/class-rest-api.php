@@ -50,6 +50,19 @@ class REST_API
       'permission_callback' => array($this, 'check_permission'),
     ));
 
+    // Export/Import
+    register_rest_route($this->namespace, '/settings/export', array(
+      'methods'             => 'GET',
+      'callback'            => array($this, 'export_settings'),
+      'permission_callback' => array($this, 'check_permission'),
+    ));
+
+    register_rest_route($this->namespace, '/settings/import', array(
+      'methods'             => 'POST',
+      'callback'            => array($this, 'import_settings'),
+      'permission_callback' => array($this, 'check_permission'),
+    ));
+
     // UI data endpoints
     register_rest_route($this->namespace, '/dashboard-widgets', array(
       'methods'             => 'GET',
@@ -75,9 +88,16 @@ class REST_API
       'permission_callback' => array($this, 'check_permission'),
     ));
 
+    // Analytics
     register_rest_route($this->namespace, '/analytics', array(
       'methods'             => 'GET',
       'callback'            => array($this, 'get_analytics'),
+      'permission_callback' => array($this, 'check_permission'),
+    ));
+
+    register_rest_route($this->namespace, '/analytics/reset', array(
+      'methods'             => 'POST',
+      'callback'            => array($this, 'reset_analytics'),
       'permission_callback' => array($this, 'check_permission'),
     ));
   }
@@ -94,11 +114,7 @@ class REST_API
       return rest_ensure_response($settings->get_settings());
     } catch (\Exception $e) {
       error_log('ACSB REST Error (get_settings): ' . $e->getMessage());
-      return new \WP_Error(
-        'settings_error',
-        __('Failed to retrieve settings.', 'admin-cleaner-speed-booster'),
-        array('status' => 500)
-      );
+      return new \WP_Error('settings_error', __('Failed to retrieve settings.', 'admin-cleaner-speed-booster'), array('status' => 500));
     }
   }
 
@@ -108,11 +124,7 @@ class REST_API
       $params = $request->get_json_params();
 
       if (! isset($params['settings']) || ! is_array($params['settings'])) {
-        return new \WP_Error(
-          'invalid_data',
-          __('Invalid settings data.', 'admin-cleaner-speed-booster'),
-          array('status' => 400)
-        );
+        return new \WP_Error('invalid_data', __('Invalid settings data.', 'admin-cleaner-speed-booster'), array('status' => 400));
       }
 
       $settings = Settings::get_instance();
@@ -126,18 +138,10 @@ class REST_API
         ));
       }
 
-      return new \WP_Error(
-        'save_failed',
-        __('Failed to save settings.', 'admin-cleaner-speed-booster'),
-        array('status' => 500)
-      );
+      return new \WP_Error('save_failed', __('Failed to save settings.', 'admin-cleaner-speed-booster'), array('status' => 500));
     } catch (\Exception $e) {
       error_log('ACSB REST Error (update_settings): ' . $e->getMessage());
-      return new \WP_Error(
-        'update_error',
-        __('An error occurred while updating settings.', 'admin-cleaner-speed-booster'),
-        array('status' => 500)
-      );
+      return new \WP_Error('update_error', __('An error occurred.', 'admin-cleaner-speed-booster'), array('status' => 500));
     }
   }
 
@@ -155,26 +159,61 @@ class REST_API
         ));
       }
 
-      return new \WP_Error(
-        'reset_failed',
-        __('Failed to reset settings.', 'admin-cleaner-speed-booster'),
-        array('status' => 500)
-      );
+      return new \WP_Error('reset_failed', __('Failed to reset settings.', 'admin-cleaner-speed-booster'), array('status' => 500));
     } catch (\Exception $e) {
       error_log('ACSB REST Error (reset_settings): ' . $e->getMessage());
-      return new \WP_Error(
-        'reset_error',
-        __('An error occurred while resetting settings.', 'admin-cleaner-speed-booster'),
-        array('status' => 500)
-      );
+      return new \WP_Error('reset_error', __('An error occurred.', 'admin-cleaner-speed-booster'), array('status' => 500));
+    }
+  }
+
+  public function export_settings($request)
+  {
+    try {
+      $settings = Settings::get_instance();
+      $data = $settings->get_settings();
+
+      return rest_ensure_response(array(
+        'success' => true,
+        'data' => $data,
+        'exported_at' => current_time('mysql'),
+        'site_url' => get_site_url(),
+      ));
+    } catch (\Exception $e) {
+      error_log('ACSB REST Error (export_settings): ' . $e->getMessage());
+      return new \WP_Error('export_error', __('Failed to export settings.', 'admin-cleaner-speed-booster'), array('status' => 500));
+    }
+  }
+
+  public function import_settings($request)
+  {
+    try {
+      $params = $request->get_json_params();
+
+      if (! isset($params['data']) || ! is_array($params['data'])) {
+        return new \WP_Error('invalid_data', __('Invalid import data.', 'admin-cleaner-speed-booster'), array('status' => 400));
+      }
+
+      $settings = Settings::get_instance();
+      $success = $settings->update_settings($params['data']);
+
+      if ($success) {
+        return rest_ensure_response(array(
+          'success' => true,
+          'message' => __('Settings imported successfully.', 'admin-cleaner-speed-booster'),
+          'settings' => $settings->get_settings(),
+        ));
+      }
+
+      return new \WP_Error('import_failed', __('Failed to import settings.', 'admin-cleaner-speed-booster'), array('status' => 500));
+    } catch (\Exception $e) {
+      error_log('ACSB REST Error (import_settings): ' . $e->getMessage());
+      return new \WP_Error('import_error', __('An error occurred.', 'admin-cleaner-speed-booster'), array('status' => 500));
     }
   }
 
   public function get_dashboard_widgets($request)
   {
     try {
-      // Dashboard widgets need admin context
-      // Return empty array in REST context to avoid errors
       if (! is_admin() || ! function_exists('wp_dashboard_setup')) {
         return rest_ensure_response(array());
       }
@@ -185,7 +224,6 @@ class REST_API
       return rest_ensure_response(is_array($widgets) ? $widgets : array());
     } catch (\Exception $e) {
       error_log('ACSB REST Error (get_dashboard_widgets): ' . $e->getMessage());
-      // Return empty array instead of error
       return rest_ensure_response(array());
     }
   }
@@ -195,7 +233,6 @@ class REST_API
     try {
       global $menu;
 
-      // Menu might not be available in REST context
       if (empty($menu) || ! is_array($menu)) {
         return rest_ensure_response(array());
       }
@@ -206,7 +243,6 @@ class REST_API
       return rest_ensure_response(is_array($items) ? $items : array());
     } catch (\Exception $e) {
       error_log('ACSB REST Error (get_menu_items): ' . $e->getMessage());
-      // Return empty array instead of error
       return rest_ensure_response(array());
     }
   }
@@ -251,16 +287,38 @@ class REST_API
 
   public function get_analytics($request)
   {
-    // Mock data for now (Pro feature)
-    return rest_ensure_response(array(
-      'pageLoads' => array(
-        'dashboard' => 150,
-        'posts' => 89,
-        'pages' => 45,
-      ),
-      'avgLoadTime' => 1.2,
-      'scriptsLoaded' => 42,
-      'stylesLoaded' => 28,
-    ));
+    try {
+      $analytics = Analytics::get_instance();
+      $data = $analytics->get_analytics();
+
+      return rest_ensure_response($data);
+    } catch (\Exception $e) {
+      error_log('ACSB REST Error (get_analytics): ' . $e->getMessage());
+      return rest_ensure_response(array(
+        'topPages' => array(),
+        'totalScripts' => 0,
+        'totalStyles' => 0,
+      ));
+    }
+  }
+
+  public function reset_analytics($request)
+  {
+    try {
+      $analytics = Analytics::get_instance();
+      $success = $analytics->reset_analytics();
+
+      if ($success) {
+        return rest_ensure_response(array(
+          'success' => true,
+          'message' => __('Analytics reset successfully.', 'admin-cleaner-speed-booster'),
+        ));
+      }
+
+      return new \WP_Error('reset_failed', __('Failed to reset analytics.', 'admin-cleaner-speed-booster'), array('status' => 500));
+    } catch (\Exception $e) {
+      error_log('ACSB REST Error (reset_analytics): ' . $e->getMessage());
+      return new \WP_Error('reset_error', __('An error occurred.', 'admin-cleaner-speed-booster'), array('status' => 500));
+    }
   }
 }
