@@ -63,7 +63,9 @@ class Main
       return;
     }
 
-    // Enqueue built React app
+    // 🔥 REQUIRED for wp.media()
+    wp_enqueue_media();
+
     $asset_file = ACSB_PLUGIN_DIR . 'build/index.asset.php';
 
     if (! file_exists($asset_file)) {
@@ -72,7 +74,6 @@ class Main
 
     $asset = require $asset_file;
 
-    // Enqueue script
     wp_enqueue_script(
       'acsb-admin',
       ACSB_PLUGIN_URL . 'build/index.js',
@@ -81,27 +82,26 @@ class Main
       true
     );
 
-    // Enqueue styles
     wp_enqueue_style(
       'acsb-admin',
       ACSB_PLUGIN_URL . 'build/index.css',
-      array('wp-components'),
+      ['wp-components'],
       $asset['version']
     );
 
-    // Pass data to React
     wp_localize_script(
       'acsb-admin',
       'acsbData',
-      array(
-        'nonce' => wp_create_nonce('wp_rest'),
-        'apiUrl' => rest_url('acsb/v1'),
-        'isPro' => class_exists('AdminCleaner\Pro'),
-        'roles' => $this->get_available_roles(),
-        'currentUser' => wp_get_current_user()->user_login,
-      )
+      [
+        'nonce'        => wp_create_nonce('wp_rest'),
+        'apiUrl'       => rest_url('acsb/v1'),
+        'isPro'        => class_exists('AdminCleaner\Pro'),
+        'roles'        => $this->get_available_roles(),
+        'currentUser'  => wp_get_current_user()->user_login,
+      ]
     );
   }
+
 
   /**
    * Get available WordPress roles
